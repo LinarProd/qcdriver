@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+    systemctl disable --now qc-daemon 2>/dev/null || true
+    dkms remove -m qc-quadcapture -v 1.0 --all 2>/dev/null || true
+fi
+
+exit 0

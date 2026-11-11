@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUAD-CAPTURE</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">QUAD-CAPTURE</div>
+  <nav class="modes">
+    <button data-mode="std" class="active">STANDARD</button>
+    <button data-mode="adv">ADVANCED</button>
+  </nav>
+  <div class="conn"><span id="dot" class="dot"></span><span id="conn">connecting…</span></div>
+</header>
+
+<main id="view-std" class="view">
+  <section class="panel">
+    <div class="col col-preamp">
+      <div class="colhead">PREAMP</div>
+      <div id="preamp"></div>
+    </div>
+    <div class="col col-comp">
+      <div class="colhead">COMPRESSOR</div>
+      <div id="compressor"></div>
+      <div class="linkrow"><button id="btn-link" class="btn yellow">LINK</button></div>
+    </div>
+    <div class="col col-mixer">
+      <div class="colhead">MIXER</div>
+      <div id="mixer"></div>
+    </div>
+  </section>
+
+  <section class="levels" id="levels">
+    <div class="levelshead">CHANNEL LEVELS</div>
+    <div class="levelsbody" id="levels-body"></div>
+  </section>
+
+  <footer class="statusbar">
+    <label class="ratebox">
+      <span class="slabel">SAMPLE RATE</span>
+      <select id="rate">
+        <option value="44100">44.1 kHz</option>
+        <option value="48000">48 kHz</option>
+        <option value="96000">96 kHz</option>
+        <option value="192000">192 kHz</option>
+      </select>
+    </label>
+    <div class="clockbox"><span class="slabel">CLOCK</span><span id="clock">—</span></div>
+    <div id="statusmsg" class="statusmsg"></div>
+  </footer>
+</main>
+
+<main id="view-adv" class="view hidden">
+  <div class="advwrap">
+    <section class="card">
+      <h2>Clock</h2>
+      <div class="kv">
+        <div><span>Rate</span><b id="adv-rate">—</b></div>
+        <div><span>Source</span><b id="adv-source">—</b></div>
+        <div><span>Locked</span><b id="adv-locked">—</b></div>
+        <div><span>USB id</span><b>0582:012f</b></div>
+      </div>
+      <div class="row">
+        <label>Set rate
+          <select id="adv-rate-select">
+            <option value="44100">44100</option>
+            <option value="48000">48000</option>
+            <option value="96000">96000</option>
+            <option value="192000">192000</option>
+          </select>
+        </label>
+        <button id="adv-rate-apply" class="btn">Apply</button>
+      </div>
+      <p class="hint">Смена частоты идёт через PipeWire (если доступен) и vendor-запрос к устройству. PCM должен быть остановлен для vendor-запроса; иначе используется PipeWire.</p>
+    </section>
+
+    <section class="card">
+      <h2>All parameters <span class="badge" title="недоступно в стандартной панели">!</span></h2>
+      <p class="hint">Полный набор параметров протокола. <span class="badge">!</span> — параметр, которого нет в стандартной панели.</p>
+      <div id="adv-params"></div>
+    </section>
+
+    <section class="card">
+      <h2>Level meters</h2>
+      <div id="adv-meters" class="advmeters"></div>
+      <p class="hint">Значения 14-битные, dB = 20·log10(v/16383). 7/8 — gain reduction компрессоров (16383 = без редукции).</p>
+    </section>
+
+    <section class="card">
+      <h2>State block <span class="badge" title="недоступно в стандартной панели">!</span></h2>
+      <p class="hint">RQ1 на <code>01 00 00 00</code>, 59 байт. Ниже — сырые байты и расшифровка.</p>
+      <pre id="adv-state-raw" class="hexdump">—</pre>
+      <div id="adv-state" class="state"></div>
+    </section>
+
+    <section class="card">
+      <h2>Raw SysEx <span class="badge" title="недоступно в стандартной панели">!</span></h2>
+      <p class="hint">Адреса и данные — hex. Чтение использует RQ1, запись — DT1. Будьте осторожны: запись произвольных адресов может изменить настройки устройства.</p>
+      <div class="row">
+        <label>Address <input id="raw-addr" value="00 02 00 04" size="14"></label>
+        <label>Size <input id="raw-size" type="number" min="1" max="59" value="1" style="width:4em"></label>
+        <button id="raw-read" class="btn">Read</button>
+      </div>
+      <div class="row">
+        <label>Data <input id="raw-data" value="00" size="30"></label>
+        <button id="raw-write" class="btn">Write</button>
+      </div>
+      <pre id="raw-out" class="hexdump">—</pre>
+    </section>
+
+    <section class="card danger">
+      <h2>Initialize <span class="badge">!</span></h2>
+      <p class="hint">Сброс всех настроек устройства (адрес <code>00 00 00 02</code>, значение 0). Официальная панель спрашивает подтверждение. Действие необратимо.</p>
+      <button id="btn-init" class="btn dangerbtn">Initialize device…</button>
+    </section>
+  </div>
+</main>
+
+<script>window.__QC_INITIAL__ = null;/*QC_INITIAL*/</script>
+<script src="app.js"></script>
+</body>
+</html>

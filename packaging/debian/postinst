@@ -1,0 +1,44 @@
+#!/bin/sh
+set -e
+
+KREL=$(uname -r)
+
+if [ -f "/lib/modules/$KREL/updates/snd-usb-audio.ko" ]; then
+    install -d /root/qcbackup
+    mv "/lib/modules/$KREL/updates/snd-usb-audio.ko" \
+        "/root/qcbackup/manual-snd-usb-audio.ko" 2>/dev/null || true
+fi
+
+rm -f /etc/systemd/system/qc-daemon.service 2>/dev/null || true
+rm -f /usr/local/bin/qcctl /usr/local/bin/qcpanel 2>/dev/null || true
+rm -f /usr/local/share/applications/qcpanel.desktop 2>/dev/null || true
+rm -f /usr/local/share/icons/hicolor/scalable/apps/qcpanel.svg \
+    2>/dev/null || true
+
+systemctl stop qc-daemon 2>/dev/null || true
+
+if command -v dkms >/dev/null 2>&1; then
+    dkms add -m qc-quadcapture -v 1.0 2>/dev/null || true
+    if dkms build -m qc-quadcapture -v 1.0; then
+        dkms install -m qc-quadcapture -v 1.0 --force 2>/dev/null || true
+    else
+        echo "WARNING: DKMS build failed. Install linux-headers-$KREL." >&2
+    fi
+fi
+
+depmod -a 2>/dev/null || true
+systemctl daemon-reload 2>/dev/null || true
+systemctl enable --now qc-daemon.service 2>/dev/null || true
+
+cat <<EOF
+
+qc-quadcapture installed.
+  module : $(modinfo -n snd_usb_audio 2>/dev/null || echo 'not found')
+  service: systemctl status qc-daemon
+  panel  : qcpanel
+  cli    : qcctl status
+
+If the previous module was already loaded, reboot to activate the new one.
+EOF
+
+exit 0

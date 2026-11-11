@@ -1,0 +1,23 @@
+[Unit]
+Description=QUAD-CAPTURE web control panel
+Documentation=file:/usr/share/doc/qc-webpanel/README.md
+After=qc-daemon.service network.target
+Wants=qc-daemon.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/qc-web --host 127.0.0.1 --port 8765
+Restart=always
+RestartSec=2
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

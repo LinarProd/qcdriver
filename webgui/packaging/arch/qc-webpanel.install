@@ -1,0 +1,23 @@
+post_install() {
+    systemctl daemon-reload
+    systemctl enable --now qc-web.service 2>/dev/null || true
+    cat <<EOF
+
+qc-webpanel installed: http://127.0.0.1:8765/
+  service: systemctl status qc-web
+  logs   : journalctl -u qc-web -f
+EOF
+}
+
+post_upgrade() {
+    systemctl daemon-reload
+    systemctl restart qc-web.service 2>/dev/null || true
+}
+
+pre_remove() {
+    systemctl disable --now qc-web.service 2>/dev/null || true
+}
+
+post_remove() {
+    systemctl daemon-reload 2>/dev/null || true
+}

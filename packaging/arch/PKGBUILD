@@ -1,0 +1,33 @@
+# Maintainer: QUAD-CAPTURE Linux driver project
+pkgname=qc-quadcapture
+pkgver=1.0
+pkgrel=1
+pkgdesc="Roland QUAD-CAPTURE (0582:012f) Linux driver, daemon and control panel"
+arch=('any')
+license=('GPL-2.0-only')
+depends=('dkms' 'python-pyusb' 'python-pyqt6')
+install="$pkgname.install"
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+    local src="$srcdir/$pkgname-$pkgver"
+
+    install -d "$pkgdir/usr/src/$pkgname-$pkgver"
+    cp -a "$src/module/." "$pkgdir/usr/src/$pkgname-$pkgver/"
+
+    install -Dm755 "$src/daemon/qcctl.py" "$pkgdir/usr/bin/qcctl"
+    install -Dm755 "$src/gui/qcpanel.py" "$pkgdir/usr/bin/qcpanel"
+
+    install -Dm644 "$src/daemon/qc-daemon.service" \
+        "$pkgdir/usr/lib/systemd/system/qc-daemon.service"
+    install -Dm644 "$src/gui/qcpanel.desktop" \
+        "$pkgdir/usr/share/applications/qcpanel.desktop"
+    install -Dm644 "$src/gui/qcpanel.svg" \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/qcpanel.svg"
+
+    install -Dm644 "$src/README.md" \
+        "$pkgdir/usr/share/doc/$pkgname/README.md"
+    install -Dm644 "$src/LICENSE" \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

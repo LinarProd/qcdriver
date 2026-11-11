@@ -1,0 +1,12 @@
+Package: qc-quadcapture
+Version: 1.0
+Section: sound
+Priority: optional
+Architecture: all
+Depends: dkms, python3 (>= 3.9), python3-usb, python3-pyqt6
+Recommends: linux-headers-generic | linux-headers-amd64
+Maintainer: QUAD-CAPTURE Linux driver project <nobody@example.invalid>
+Description: Roland QUAD-CAPTURE (0582:012f) driver, daemon and panel
+ Patched snd-usb-audio module with all four sample rates and the control
+ SysEx channel, a control daemon that keeps the panel from freezing, and a
+ Qt control panel with level meters and sample-rate selection.

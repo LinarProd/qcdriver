@@ -1,0 +1,11 @@
+Package: qc-webpanel
+Version: 1.0
+Section: sound
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.9), qc-quadcapture
+Maintainer: QUAD-CAPTURE Linux driver project <nobody@example.invalid>
+Description: Web control panel for the Roland QUAD-CAPTURE
+ Serves a browser UI on 127.0.0.1:8765 (standard and advanced modes) and
+ talks to the qcctl daemon over /run/qcctl.sock. Requires qc-quadcapture
+ for the patched module and the daemon.

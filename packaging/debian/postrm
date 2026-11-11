@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+depmod -a 2>/dev/null || true
+
+if [ "$1" = "purge" ]; then
+    rm -rf /usr/src/qc-quadcapture-1.0
+    rm -f /etc/systemd/system/qc-daemon.service
+fi
+
+exit 0

@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+systemctl daemon-reload 2>/dev/null || true
+systemctl enable --now qc-web.service 2>/dev/null || true
+
+cat <<EOF
+
+qc-webpanel installed: http://127.0.0.1:8765/
+  service: systemctl status qc-web
+  logs   : journalctl -u qc-web -f
+EOF
+
+exit 0

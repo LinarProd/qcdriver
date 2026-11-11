@@ -1,0 +1,12 @@
+[Unit]
+Description=Roland QUAD-CAPTURE control daemon
+After=sound.target
+Wants=sound.target
+
+[Service]
+ExecStart=/usr/bin/qcctl daemon
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

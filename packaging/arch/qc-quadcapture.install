@@ -1,0 +1,57 @@
+_qc_setup() {
+    local krel
+    krel=$(uname -r)
+
+    # Remove files from a pre-package manual install (old paths).
+    if [ -f "/lib/modules/$krel/updates/snd-usb-audio.ko" ]; then
+        install -d /root/qcbackup
+        mv "/lib/modules/$krel/updates/snd-usb-audio.ko" \
+            "/root/qcbackup/manual-snd-usb-audio.ko" 2>/dev/null || true
+    fi
+    rm -f /etc/systemd/system/qc-daemon.service 2>/dev/null || true
+    rm -f /usr/local/bin/qcctl /usr/local/bin/qcpanel 2>/dev/null || true
+    rm -f /usr/local/share/applications/qcpanel.desktop 2>/dev/null || true
+    rm -f /usr/local/share/icons/hicolor/scalable/apps/qcpanel.svg \
+        2>/dev/null || true
+
+    systemctl stop qc-daemon 2>/dev/null || true
+
+    dkms add -m qc-quadcapture -v 1.0 2>/dev/null || true
+    if ! dkms build -m qc-quadcapture -v 1.0; then
+        echo "WARNING: DKMS build failed. Install the kernel headers for $krel." >&2
+    fi
+    dkms install -m qc-quadcapture -v 1.0 --force 2>/dev/null || true
+
+    depmod -a
+    systemctl daemon-reload
+    systemctl enable --now qc-daemon.service 2>/dev/null || true
+
+    cat <<EOF
+
+qc-quadcapture installed.
+  module : $(modinfo -n snd_usb_audio 2>/dev/null || echo 'not found')
+  service: systemctl status qc-daemon
+  panel  : qcpanel
+  cli    : qcctl status
+
+If the old module was already loaded, reboot (or run scripts/reload.sh
+from the source tree) to activate the new one.
+EOF
+}
+
+post_install() {
+    _qc_setup
+}
+
+post_upgrade() {
+    _qc_setup
+}
+
+pre_remove() {
+    systemctl disable --now qc-daemon 2>/dev/null || true
+    dkms remove -m qc-quadcapture -v 1.0 --all 2>/dev/null || true
+}
+
+post_remove() {
+    depmod -a 2>/dev/null || true
+}
