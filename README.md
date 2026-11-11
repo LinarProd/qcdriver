@@ -242,6 +242,7 @@ systemctl --user start wireplumber.service pipewire.service \
 Из исходников: `scripts/uninstall.sh` (модуль/DKMS/сервис), затем удалите
 `/usr/bin/qcctl`, `/usr/bin/qcpanel` и юнит при необходимости.
 
-## Лицензия
+## Лицензия и благодарность
 
+Спасибо louistissot за предоставленный код и описание работы драйвера и общения карты с пк(https://github.com/louistissot/quad-capture-macos-silicon-driver)
 GPL-2.0-only. Исходники модуля взяты из ядра Linux.
